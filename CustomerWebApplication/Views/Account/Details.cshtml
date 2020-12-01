@@ -1,32 +1,19 @@
-﻿@model CustomerWebApplication.Data.Customer
+﻿@model Customer.Web.ViewModels.CustomerViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Profile";
 }
 
-<h1>Details</h1>
+<h1>Account Details</h1>
 
 <div>
-    <h4>Customer</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Id)
+            Name
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.GivenName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.GivenName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FamilyName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FamilyName)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GivenName) @Html.DisplayFor(model => model.FamilyName)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.EmailAddress)
@@ -35,32 +22,25 @@
             @Html.DisplayFor(model => model.EmailAddress)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PhoneNumber)
+            @Html.DisplayNameFor(model => model.TelephoneNumber)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhoneNumber)
+            @Html.DisplayFor(model => model.TelephoneNumber)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DeliveryAddress)
+            Address
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DeliveryAddress)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CanPurchase)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CanPurchase)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsDeleted)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsDeleted)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AddressOne), <br>
+            @Html.DisplayFor(model => model.AddressTwo), <br>
+            @Html.DisplayFor(model => model.Town), <br>
+            @Html.DisplayFor(model => model.State), <br>
+            @Html.DisplayFor(model => model.AreaCode), <br>
+            @Html.DisplayFor(model => model.Country)
         </dd>
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Update" asp-route-id="@Model.CustomerId">Update Details</a> |
+    <a asp-action="Delete" asp-route-id="@Model.CustomerId">Delete Account</a>
 </div>
