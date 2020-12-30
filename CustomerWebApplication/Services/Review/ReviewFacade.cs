@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using IdentityModel.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -30,13 +31,25 @@ namespace Customer.Web.Services.Review
 
         // GET: api/Review?productId=X
         [HttpGet("api/Review")]
-        public async Task<List<ReviewDto>> GetProductReviews(int productId)
+        public async Task<IEnumerable<ReviewDto>> GetProductReviews(int productId)
         {
+            var cient = _clientFactory.CreateClient();
+
+            var disco = await cient.GetDiscoveryDocumentAsync("");
+            var tokenResponse = await cient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = "customer_web_app",
+                ClientSecret = "8PuT=9o6TC0i0CB#ctzR",
+                Scope = "customer_web_app"
+            });
+
             var response = await _client.GetAsync("api/Review?productId=" + productId);
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
             }
+
             response.EnsureSuccessStatusCode();
             var reviews = await response.Content.ReadAsAsync<List<ReviewDto>>();
 
@@ -45,8 +58,19 @@ namespace Customer.Web.Services.Review
 
         // POST: api/Review
         [HttpPost("api/Review")]
-        public async Task<ReviewDto> PostReview(ReviewDto newReview)
+        public async Task<ReviewDto> NewReview(ReviewDto newReview)
         {
+            var cient = _clientFactory.CreateClient();
+
+            var disco = await cient.GetDiscoveryDocumentAsync("");
+            var tokenResponse = await cient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = "customer_web_app",
+                ClientSecret = "8PuT=9o6TC0i0CB#ctzR",
+                Scope = "customer_web_app"
+            });
+
             var response = await _client.PostAsJsonAsync("api/Review", newReview);
             response.EnsureSuccessStatusCode();
 
@@ -55,39 +79,48 @@ namespace Customer.Web.Services.Review
 
         // GET: api/Review?customerId=X
         [HttpGet("api/Review")]
-        public async Task<List<ReviewDto>> GetCustomerReviews(int customerId)
+        public async Task<IEnumerable<ReviewDto>> GetCustomerReviews(int customerId)
         {
+            var cient = _clientFactory.CreateClient();
+
+            var disco = await cient.GetDiscoveryDocumentAsync("");
+            var tokenResponse = await cient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = "customer_web_app",
+                ClientSecret = "8PuT=9o6TC0i0CB#ctzR",
+                Scope = "customer_web_app"
+            });
+
             var response = await _client.GetAsync("api/Review?customerId=" + customerId);
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
             }
+
             response.EnsureSuccessStatusCode();
             var reviews = await response.Content.ReadAsAsync<List<ReviewDto>>();
 
             return reviews;
         }
 
-        // GET: api/Review/X
-        [HttpGet("api/Review")]
-        public async Task<ReviewDto> GetReview(int reviewId)
-        {
-            var response = await _client.GetAsync("api/Review/" + reviewId);
-            if (response.StatusCode == HttpStatusCode.NotFound)
-            {
-                return null;
-            }
-            response.EnsureSuccessStatusCode();
-            var Review = await response.Content.ReadAsAsync<ReviewDto>();
-
-            return Review;
-        }
-
         // PUT: api/Review/X
         [HttpPut("api/Review")]
-        public async Task<ReviewDto> PutReview(int reviewId, ReviewDto updatedReview)
+        public async Task<ReviewDto> EditReview(ReviewDto updatedReview)
         {
-            var response = await _client.PutAsJsonAsync("/api/Review/" + reviewId, updatedReview);
+            var cient = _clientFactory.CreateClient();
+
+            var disco = await cient.GetDiscoveryDocumentAsync("");
+            var tokenResponse = await cient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = "customer_web_app",
+                ClientSecret = "8PuT=9o6TC0i0CB#ctzR",
+                Scope = "customer_web_app"
+            });
+
+            var response = await _client.PutAsJsonAsync("/api/Review?customerId=" + updatedReview.CustomerId 
+                                                                  + "&productId=" + updatedReview.ProductId, updatedReview);
             response.EnsureSuccessStatusCode();
 
             return updatedReview;
@@ -95,9 +128,21 @@ namespace Customer.Web.Services.Review
 
         // DELETE: api/Review/X
         [HttpDelete("api/Review")]
-        public async Task<ReviewDto> DeleteReview(int reviewId)
+        public async Task<ReviewDto> DeleteReview(int customerId, int productId)
         {
-            var response = await _client.DeleteAsync("/api/Review/" + reviewId);
+            var cient = _clientFactory.CreateClient();
+
+            var disco = await cient.GetDiscoveryDocumentAsync("");
+            var tokenResponse = await cient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = "customer_web_app",
+                ClientSecret = "8PuT=9o6TC0i0CB#ctzR",
+                Scope = "customer_web_app"
+            });
+
+            var response = await _client.DeleteAsync("/api/Review?customerId=" + customerId
+                                                                  + "&productId=" + productId);
 
             return null;
         }

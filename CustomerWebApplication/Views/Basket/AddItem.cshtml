@@ -1,6 +1,21 @@
-﻿@model Customer.Web.ViewModels.ProductViewModel
+﻿@model Customer.Web.ViewModels.BasketItemViewModel
 
-    <h1>@Html.DisplayFor(model => model.Name)</h1>
+<h1>@Html.DisplayFor(model => model.Name)</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form>
+            <input type="hidden" asp-for="ProductId" />
+            <div class="form-group">
+                <label asp-for="Quantity"></label>
+                <input asp-for="Quantity" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Add to Basket" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
 
 <div>
     <hr />
@@ -24,12 +39,6 @@
             <a asp-action="ByBrand" asp-route-BrandId="@Html.DisplayFor(model => model.BrandId)">@Html.DisplayFor(model => model.Brand)</a>
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Quantity)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Quantity)
-        </dd>
-        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Price)
         </dt>
         <dd class="col-sm-10">
@@ -43,8 +52,5 @@
         </dd>
     </dl>
 </div>
-<div>
-    <hr />
-    <a asp-controller="Review" asp-action="Index" asp-route-ProductId="@Model.ProductId" asp-route-ProductName="@Model.Name">Reviews</a>
-</div>
+
 

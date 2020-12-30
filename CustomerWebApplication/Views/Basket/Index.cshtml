@@ -1,0 +1,59 @@
+﻿@model IEnumerable<Customer.Web.ViewModels.BasketItemViewModel>
+
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>Basket</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Product
+            </th>
+            <th>
+                Price
+            </th>
+            <th>
+                Quantity
+            </th>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-controller="Product" asp-action="Details" asp-route-ProductId="@item.ProductId">@Html.DisplayFor(modelItem => item.ProductId)</a>
+                </td>
+                <td>
+                    <a asp-controller="Product" asp-action="Details" asp-route-ProductId="@item.ProductId">@Html.DisplayFor(modelItem => item.Name)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    <a asp-controller="Basket" asp-action="RemoveItem" asp-route-ProductId="@item.ProductId">Remove</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <hr />
+    <input type="button"
+            value="Create Order"
+            onclick="location.href='@Url.Action("Index", "Order")'" />
+</div>

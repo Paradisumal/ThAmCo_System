@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Customer.Web.Services.Product;
 using Customer.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 
 namespace CustomerWebApplication.Controllers
@@ -22,77 +25,264 @@ namespace CustomerWebApplication.Controllers
         }
 
         // GET : Product
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             return View();
         }
 
         // GET : Product/Categories
+        [AllowAnonymous]
         public async Task<IActionResult> Categories()
         {
             ProductInfoDto productInfo = null;
+            try
+            {
+                productInfo = await _ProductFacade.GetCategoriesAndBrands();
+            }
+            catch (HttpRequestException)
+            {
+                _logger.LogWarning("Exception Occured using Product Facade");
+                productInfo = null;
+            }
 
-            return View(productInfo);
+            var viewModel = new CategoryListViewModel()
+            {
+                Categories = productInfo.Categories
+            };
+
+            return View(viewModel);
+        }
+
+        // GET : Product/ByCategory
+        [AllowAnonymous]
+        public async Task<IActionResult> ByCategory([FromQuery] int CategoryId)
+        {
+            IEnumerable<ProductDto> products = null;
+            try
+            {
+                products = await _ProductFacade.GetProductsByCategory(CategoryId);
+            }
+            catch (HttpRequestException)
+            {
+                _logger.LogWarning("Exception Occured using Product Facade");
+                products = null;
+            }
+
+            IEnumerable<ProductViewModel> viewModel = products.Select(p => new ProductViewModel
+            {
+                ProductId = p.ProductId,
+                Name = p.Name,
+                Description = p.Description,
+                Quantity = p.Quantity,
+                BrandId = p.BrandId,
+                Brand = p.Brand,
+                CategoryId = p.CategoryId,
+                Category = p.Category,
+                Price = p.Price
+            });
+
+            ViewData["Category"] = products.First().Category;
+
+            return View(viewModel);
         }
 
         // GET : Product/Brands
+        [AllowAnonymous]
         public async Task<IActionResult> Brands()
         {
             ProductInfoDto productInfo = null;
+            try
+            {
+                productInfo = await _ProductFacade.GetCategoriesAndBrands();
+            }
+            catch (HttpRequestException)
+            {
+                _logger.LogWarning("Exception Occured using Product Facade");
+                productInfo = null;
+            }
 
-            return View(productInfo);
+            var viewModel = new BrandListViewModel()
+            {
+                Brands = productInfo.Brands
+            };
+
+            return View(viewModel);
+        }
+
+        // GET : Product/ByCategory
+        [AllowAnonymous]
+        public async Task<IActionResult> ByBrand([FromQuery] int BrandId)
+        {
+            IEnumerable<ProductDto> products = null;
+            try
+            {
+                products = await _ProductFacade.GetProductsByBrand(BrandId);
+            }
+            catch (HttpRequestException)
+            {
+                _logger.LogWarning("Exception Occured using Product Facade");
+                products = null;
+            }
+
+            IEnumerable<ProductViewModel> viewModel = products.Select(p => new ProductViewModel
+            {
+                ProductId = p.ProductId,
+                Name = p.Name,
+                Description = p.Description,
+                Quantity = p.Quantity,
+                BrandId = p.BrandId,
+                Brand = p.Brand,
+                CategoryId = p.CategoryId,
+                Category = p.Category,
+                Price = p.Price
+            });
+
+            ViewData["Brand"] = products.First().Brand;
+
+            return View(viewModel);
         }
 
         // GET : Product/Filter
+        [AllowAnonymous]
         public async Task<IActionResult> Filter()
         {
             ProductInfoDto productInfo = null;
-
-            return View(productInfo);
-        }
-
-        /*// Post : Product/Filter
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Filter()
-        {
-            if (ModelState.IsValid)
+            try
             {
-
+                productInfo = await _ProductFacade.GetCategoriesAndBrands();
+            }
+            catch (HttpRequestException)
+            {
+                _logger.LogWarning("Exception Occured using Product Facade");
+                productInfo = null;
             }
 
-            return View();
-        }*/
+            var viewModel = new ProductFilterViewModel()
+            {
+                /*Categories = productInfo.Categories,
+                Brands = productInfo.Brands,*/
+            };
+
+            ViewData["BrandId"] = new SelectList(productInfo.Brands, "BrandId", "Brand");
+            ViewData["CategoryId"] = new SelectList(productInfo.Categories, "CategoryId", "Category");
+
+            return View(viewModel);
+        }
+
+        // GET : Product/ByFilter
+        [AllowAnonymous]
+        public async Task<IActionResult> ByFilter([FromQuery] int CategoryId,
+                                                   [FromQuery] int BrandId,
+                                                   [FromQuery] double MinPrice,
+                                                   [FromQuery] double MaxPrice)
+        {
+            IEnumerable<ProductDto> products = null;
+            try
+            {
+                products = await _ProductFacade.GetProductsByFilter(CategoryId, BrandId,
+                                                                    MinPrice, MaxPrice);
+            }
+            catch (HttpRequestException)
+            {
+                _logger.LogWarning("Exception Occured using Product Facade");
+                products = null;
+            }
+
+            IEnumerable<ProductViewModel> viewModel = products.Select(p => new ProductViewModel
+            {
+                ProductId = p.ProductId,
+                Name = p.Name,
+                Description = p.Description,
+                Quantity = p.Quantity,
+                BrandId = p.BrandId,
+                Brand = p.Brand,
+                CategoryId = p.CategoryId,
+                Category = p.Category,
+                Price = p.Price
+            });
+
+            ViewData["Category"] = products.First().Category;
+            ViewData["Brand"] = products.First().Brand;
+            ViewData["CategoryId"] = MinPrice;
+            ViewData["BrandId"] = MaxPrice;
+            ViewData["MinPrice"] = MinPrice;
+            ViewData["MaxPrice"] = MaxPrice;
+
+            return View(viewModel);
+        }
 
         // GET: Product/Search
+        [AllowAnonymous]
         public async Task<IActionResult> Search()
         {
             return View();
         }
 
-        /*// POST: Product/Search
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Search()
+        // GET: Product/BySearch
+        [AllowAnonymous]
+        public async Task<IActionResult> BySearch(string SearchString)
         {
-            if (ModelState.IsValid)
+            IEnumerable<ProductDto> products = null;
+            try
             {
-
+                products = await _ProductFacade.GetProductsBySearch(SearchString);
+            }
+            catch (HttpRequestException)
+            {
+                _logger.LogWarning("Exception Occured using Product Facade");
+                products = null;
             }
 
-            return View();
-        }*/
+            IEnumerable<ProductViewModel> viewModel = products.Select(p => new ProductViewModel
+            {
+                ProductId = p.ProductId,
+                Name = p.Name,
+                Description = p.Description,
+                Quantity = p.Quantity,
+                BrandId = p.BrandId,
+                Brand = p.Brand,
+                CategoryId = p.CategoryId,
+                Category = p.Category,
+                Price = p.Price
+            });
 
-        // GET: Product/List
-        public async Task<IActionResult> Catalogue()
-        {
-            return View();
+            ViewData["Category"] = products.First().Category;
+            ViewData["Brand"] = products.First().Brand;
+            ViewData["SearchString"] = SearchString;
+
+            return View(viewModel);
         }
 
         // GET : Product/Details/5
-        public async Task<IActionResult> Details(int id)
+        [AllowAnonymous]
+        public async Task<IActionResult> Details(int productId)
         {
-            return View();
+            ProductDto product = null;
+            try
+            {
+                product = await _ProductFacade.GetProduct(productId);
+            }
+            catch (HttpRequestException)
+            {
+                _logger.LogWarning("Exception Occured using Product Facade");
+                product = null;
+            }
+
+            ProductViewModel viewModel = new ProductViewModel
+            {
+                ProductId = product.ProductId,
+                Name = product.Name,
+                Description = product.Description,
+                Quantity = product.Quantity,
+                BrandId = product.BrandId,
+                Brand = product.Brand,
+                CategoryId = product.CategoryId,
+                Category = product.Category,
+                Price = product.Price
+            };
+
+            return View(viewModel);
         }
     }
 }

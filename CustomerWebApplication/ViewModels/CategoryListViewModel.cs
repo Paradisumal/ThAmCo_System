@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Customer.Web.Services.Product;
 
-namespace Customer.Web.Services.Product
+namespace Customer.Web.ViewModels
 {
-    public class ProductInfoDto
+    public class CategoryListViewModel
     {
-        public IEnumerable<BrandDto> Brands { get; set; }
-
         public IEnumerable<CategoryDto> Categories { get; set; }
     }
 }

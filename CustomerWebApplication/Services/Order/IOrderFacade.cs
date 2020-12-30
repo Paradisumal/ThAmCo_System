@@ -7,11 +7,11 @@ namespace Customer.Web.Services.Order
 {
     public interface IOrderFacade
     {
-        Task<OrderDto> PostOrder(OrderDto newOrder);
+        Task<OrderDto> NewOrder(OrderDto newOrder);
 
         Task<OrderDto> GetOrder(int orderId);
 
-        Task<List<OrderHistoryDto>> GetOrders(int customerId);
+        Task<IEnumerable<OrderHistoryDto>> GetOrders(int customerId);
     }
 }
 

@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Polly;
 
 namespace CustomerWebApplication
 {
@@ -39,12 +40,7 @@ namespace CustomerWebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            /*services.AddAuthentication("Bearer")
-                    .AddJwtBearer("Bearer", options =>
-                    {
-                        options.Authority = "";
-                        options.Audience = "";
-                    });*/
+
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -53,13 +49,17 @@ namespace CustomerWebApplication
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            /*services.AddAuthentication("Cookies")
-                    .AddCookie("Cookies");*/
+            services.AddHttpClient("RetryAndBreak")
+                    .AddTransientHttpErrorPolicy(p => p.OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                                                       .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
+                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
 
+            services.AddAuthentication("Cookies")
+                    .AddCookie("Cookies");
+
+            services.AddAuthorization();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
-            services.AddDbContext<AppDbContext>();
 
             if(_env.IsDevelopment())
             {
@@ -97,7 +97,7 @@ namespace CustomerWebApplication
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            /*app.UseAuthentication();*/
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {

@@ -7,11 +7,10 @@ namespace Customer.Web.Services.Review
 {
     public interface IReviewFacade
     {
-        Task<List<ReviewDto>> GetProductReviews(int productId);
-        Task<ReviewDto> PostReview(ReviewDto newReview);
-        Task<ReviewDto> GetReview(int productId);
-        Task<ReviewDto> PutReview(int productId, ReviewDto updatedReview);
-        Task<ReviewDto> DeleteReview(int reviewId);
-        Task<List<ReviewDto>> GetCustomerReviews(int customerId);
+        Task<IEnumerable<ReviewDto>> GetProductReviews(int productId);
+        Task<ReviewDto> NewReview(ReviewDto newReview);
+        Task<ReviewDto> EditReview(ReviewDto updatedReview);
+        Task<ReviewDto> DeleteReview(int customerId, int productId);
+        Task<IEnumerable<ReviewDto>> GetCustomerReviews(int customerId);
     }
 }

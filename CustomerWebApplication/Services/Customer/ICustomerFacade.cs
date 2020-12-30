@@ -7,7 +7,9 @@ namespace Customer.Web.Services.Customer
 {
     public interface ICustomerFacade
     {
-        Task<CustomerDto> PostCustomer(CustomerDto newCustomer);
+        Task<CustomerDto> Register(CustomerDto newCustomer);
+        Task<AccountDto> Login(AccountDto account);
+        Task<AccountDto> Logout();
         Task<CustomerDto> GetCustomer(int customerId);
         Task<CustomerDto> PutCustomer(int customerId, CustomerDto updatedCustomer);
         Task<CustomerDto> DeleteCustomer(int customerId);

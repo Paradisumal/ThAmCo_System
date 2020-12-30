@@ -1,24 +1,8 @@
 ﻿@model Customer.Web.ViewModels.OrderViewModel
 
-    <h1>Order @Html.DisplayFor(model => model.OrderId)</h1>
+<h1>Create Order</h1>
 
-<div>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Order
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.OrderId)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Date)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Date)
-        </dd>
-    </dl>
-</div>
+<a asp-controller="Basket" asp-action="Index">Back to basket</a>
 
 <hr />
 <table class="table">
@@ -38,8 +22,6 @@
             </th>
             <th>
                 Subtotal
-            </th>
-            <th>
             </th>
         </tr>
     </thead>
@@ -63,32 +45,36 @@
                     @{double subtotal = item.Price * item.Quantity;}
                     @subtotal
                 </td>
-                <td>
-                    @if(item.hasReviewed == false)
-                    {
-                        <a asp-controller="Review" asp-action="Create" asp-route-ProductId="@item.ProductId" asp-route-ProductName="@item.ProductName">Review</a>
-                    }
-                </td>
             </tr>
         }
     </tbody>
     <tfoot>
-        <tr>
-            <td>
-            </td>
-            <td>
-            </td>
-            <td>
-            </td>
-            <td>
-                <b>Total</b>
-            </td>
-            <td>
-                <b>@Model.TotalPrice</b>
-            </td>
-        </tr>
+    <td>
+    </td>
+    <td>
+    </td>
+    <td>
+    </td>
+    <td>
+        <b>Total</b>
+    </td>
+    <td>
+        <b>@Model.TotalPrice</b>
+    </td>
     </tfoot>
 </table>
-<div>
-    <a asp-action="History">Back to History</a>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input type="submit" value="Confirm Order" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
 </div>
+
+
+

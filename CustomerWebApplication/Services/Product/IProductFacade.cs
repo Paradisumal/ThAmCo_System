@@ -9,13 +9,13 @@ namespace Customer.Web.Services.Product
     {
         Task<ProductInfoDto> GetCategoriesAndBrands();
 
-        Task<List<ProductDto>> GetProductsByCategory(int categoryId);
+        Task<IEnumerable<ProductDto>> GetProductsByCategory(int categoryId);
 
-        Task<List<ProductDto>> GetProductsByBrand(int brandId);
+        Task<IEnumerable<ProductDto>> GetProductsByBrand(int brandId);
 
-        Task<List<ProductDto>> GetProductsBySearch(string searchString);
+        Task<IEnumerable<ProductDto>> GetProductsBySearch(string searchString);
 
-        Task<List<ProductDto>> GetProductsByFilter(int? categoryId, 
+        Task<IEnumerable<ProductDto>> GetProductsByFilter(int? categoryId, 
                                                    int? brandId, 
                                                    double? minPrice, 
                                                    double? maxPrice);

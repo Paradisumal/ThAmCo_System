@@ -31,13 +31,23 @@ namespace Customer.Web.Services.Customer
 
         }
 
-        public Task<CustomerDto> PostCustomer(CustomerDto newCustomer)
+        public Task<CustomerDto> Register(CustomerDto newCustomer)
         {
             newCustomer.CustomerId = 6;
 
             _customers.Add(newCustomer);
 
             return Task.FromResult(newCustomer);
+        }
+
+        public async Task<AccountDto> Login(AccountDto account)
+        {
+            return null;
+        }
+
+        public async Task<AccountDto> Logout()
+        {
+            return null;
         }
 
         public Task<CustomerDto> GetCustomer(int customerId)

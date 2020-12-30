@@ -8,9 +8,9 @@ namespace Customer.Web.Services.Basket
 {
     public interface IBasketFacade
     {
-        Task<BasketItemDto> PostItem(BasketItemDto basketItem);
-        Task<List<BasketItemDto>> GetBasket(int customerId);
-        Task<BasketItemDto> PutItem(int customerId, BasketItemDto basketItem);
-        Task<BasketItemDto> DeleteItem(int customerId, int productId);
+        Task<BasketItemDto> AddItem(BasketItemDto basketItem);
+        Task<IEnumerable<BasketItemDto>> GetBasket(int newItem);
+        Task<BasketItemDto> UpdateItem(int customerId, BasketItemDto updatedItem);
+        Task<BasketItemDto> RemoveItem(int customerId, int productId);
     }
 }

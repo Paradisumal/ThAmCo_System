@@ -4,35 +4,37 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using IdentityModel.Client;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace Customer.Web.Services.Basket
 {
-    public class BasketFacade : IBasketFacade
+
+
+    public class BasketFacade : ControllerBase, IBasketFacade
     {
         private readonly ILogger<BasketItemDto> _logger;
         private readonly IHttpClientFactory _clientFactory;
-        private readonly HttpClient _client;
 
         public BasketFacade(ILogger<BasketItemDto> logger,
-                              IHttpClientFactory clientFactory,
-                              HttpClient client)
+                              IHttpClientFactory clientFactory)
         {
             _logger = logger;
             _clientFactory = clientFactory;
-
-            client.BaseAddress = new System.Uri("");
-            client.Timeout = TimeSpan.FromSeconds(5);
-            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
-            _client = client;
         }
 
         // GET: api/Basket/X
-        [HttpGet("api/Basket")]
-        public async Task<List<BasketItemDto>> GetBasket(int customerId)
+        public async Task<IEnumerable<BasketItemDto>> GetBasket(int customerId)
         {
-            var response = await _client.GetAsync("api/Basket/" + customerId);
+            var client = _clientFactory.CreateClient("RetryAndBreak");
+
+            string accessToken = await HttpContext.GetTokenAsync("access_token");
+
+            client.SetBearerToken(accessToken);
+
+            var response = await client.GetAsync("https://customerorderingthamco.azurewebsites.net/Basket/" + customerId);
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
@@ -45,32 +47,46 @@ namespace Customer.Web.Services.Basket
         }
 
         // POST: api/Basket
-        [HttpPost("api/Basket")]
-        public async Task<BasketItemDto> PostItem(BasketItemDto basketItem)
+        public async Task<BasketItemDto> AddItem(BasketItemDto newItem)
         {
-            var response = await _client.PostAsJsonAsync("api/Basket", basketItem);
+            var client = _clientFactory.CreateClient("RetryAndBreak");
+
+            string accessToken = await HttpContext.GetTokenAsync("access_token");
+
+            client.SetBearerToken(accessToken);
+
+            var response = await client.PostAsJsonAsync("https://customerorderingthamco.azurewebsites.net/Basket", newItem);
             response.EnsureSuccessStatusCode();
 
-            return basketItem;
+            return newItem;
         }
 
         // PUT: api/Basket/X
-        [HttpPut("api/Basket")]
-        public async Task<BasketItemDto> PutItem(int customerId, BasketItemDto basketItem)
+        public async Task<BasketItemDto> UpdateItem(int customerId, BasketItemDto updatedItem)
         {
-            var response = await _client.PutAsJsonAsync("/api/Basket/" + customerId, basketItem);
+            var client = _clientFactory.CreateClient("RetryAndBreak");
+
+            string accessToken = await HttpContext.GetTokenAsync("access_token");
+
+            client.SetBearerToken(accessToken);
+
+            var response = await client.PutAsJsonAsync("https://customerorderingthamco.azurewebsites.net/Basket/" + customerId, updatedItem);
             response.EnsureSuccessStatusCode();
 
-            return basketItem;
+            return updatedItem;
         }
 
         // DELETE: api/Basket?customerId=X&productId=X
-        [HttpDelete("api/Basket")]
-        public async Task<BasketItemDto> DeleteItem(int customerId, int productId)
+        public async Task<BasketItemDto> RemoveItem(int customerId, int productId)
         {
-            var response = await _client.DeleteAsync("/api/Basket?customerId=" + customerId
-                                                               + "&productId=" + productId);
+            var client = _clientFactory.CreateClient("RetryAndBreak");
 
+            string accessToken = await HttpContext.GetTokenAsync("access_token");
+
+            client.SetBearerToken(accessToken);
+
+            var response = await client.DeleteAsync("https://customerorderingthamco.azurewebsites.net/Basket?customerId=" + customerId
+                                                               + "&productId=" + productId);
             return null;
         }
     }

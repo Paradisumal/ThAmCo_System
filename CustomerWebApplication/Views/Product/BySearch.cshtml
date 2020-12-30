@@ -1,0 +1,64 @@
+﻿@model IEnumerable<Customer.Web.ViewModels.ProductViewModel>
+
+<a asp-action="Search">New Search</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Product
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+                Category
+            </th>
+            <th>
+                Brand
+            </th>
+            <th>
+                Price
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                <a asp-action="Details" asp-route-ProductId="@item.ProductId">@Html.DisplayFor(modelItem => item.ProductId)</a>
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-ProductId="@item.ProductId">@Html.DisplayFor(modelItem => item.Name)</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                <a asp-action="ByCategory" asp-route-CategoryId="@item.CategoryId">@Html.DisplayFor(modelItem => item.Category)</a>
+            </td>
+            <td>
+                <a asp-action="ByBrand" asp-route-BrandId="@item.BrandId">@Html.DisplayFor(modelItem => item.Brand)</a>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                <a asp-controller="Review" asp-action="Index" asp-route-ProductId="@item.ProductId" asp-route-ProductName="@item.Name">Reviews</a> |
+                <a asp-controller="Basket" asp-action="AddItem" asp-route-ProductId="@item.ProductId">Add to Basket</a>
+            </td>
+        </tr>
+        }
+    </tbody>

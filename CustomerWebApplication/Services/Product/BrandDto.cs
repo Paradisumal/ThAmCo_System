@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace Customer.Web.Services.Product
 {
-    public class ProductInfoDto
+    public class BrandDto
     {
-        public IEnumerable<BrandDto> Brands { get; set; }
+        public int BrandId { get; set; }
 
-        public IEnumerable<CategoryDto> Categories { get; set; }
+        public string Brand { get; set; }
     }
 }

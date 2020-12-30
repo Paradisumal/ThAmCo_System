@@ -4,39 +4,45 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using IdentityModel.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace Customer.Web.Services.Product
 {
-    public class ProductFacade : IProductFacade
+    public class ProductFacade : ControllerBase, IProductFacade
     {
         private readonly ILogger<ProductDto> _logger;
         private readonly IHttpClientFactory _clientFactory;
-        private readonly HttpClient _client;
 
         public ProductFacade(ILogger<ProductDto> logger,
-                              IHttpClientFactory clientFactory,
-                              HttpClient client)
+                              IHttpClientFactory clientFactory)
         {
             _logger = logger;
             _clientFactory = clientFactory;
-
-            client.BaseAddress = new System.Uri("");
-            client.Timeout = TimeSpan.FromSeconds(5);
-            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
-            _client = client;
         }
 
         // GET: api/Product
         [HttpGet("api/Product")]
         public async Task<ProductInfoDto> GetCategoriesAndBrands()
         {
-            var response = await _client.GetAsync("api/Product");
+            var client = _clientFactory.CreateClient();
+
+            var disco = await client.GetDiscoveryDocumentAsync("https://customerproductsthamco.azurewebsites.net/");
+            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = "customer_web_app",
+                ClientSecret = "8PuT=9o6TC0i0CB#ctzR",
+                Scope = "customer_web_app"
+            });
+
+            var response = await client.GetAsync("https://customerproductsthamco.azurewebsites.net/Product");
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
             }
+
             response.EnsureSuccessStatusCode();
             var productInfo = await response.Content.ReadAsAsync<ProductInfoDto>();
 
@@ -45,43 +51,79 @@ namespace Customer.Web.Services.Product
 
         // GET: api/Product?categoryId=x
         [HttpGet("api/Product")]
-        public async Task<List<ProductDto>> GetProductsByCategory(int categoryId)
+        public async Task<IEnumerable<ProductDto>> GetProductsByCategory(int categoryId)
         {
-            var response = await _client.GetAsync("api/Product?categoryId=" + categoryId);
+            var client = _clientFactory.CreateClient();
+
+            var disco = await client.GetDiscoveryDocumentAsync("https://customerproductsthamco.azurewebsites.net/");
+            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = "customer_web_app",
+                ClientSecret = "8PuT=9o6TC0i0CB#ctzR",
+                Scope = "customer_web_app"
+            });
+
+            var response = await client.GetAsync("https://customerproductsthamco.azurewebsites.net/Product?categoryId=" + categoryId);
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
             }
+
             response.EnsureSuccessStatusCode();
-            var products = await response.Content.ReadAsAsync<List<ProductDto>>();
+            var products = await response.Content.ReadAsAsync<IEnumerable<ProductDto>>();
 
             return products;
         }
 
         // GET: api/Product?brandId=X
         [HttpGet("api/Product")]
-        public async Task<List<ProductDto>> GetProductsByBrand(int brandId)
+        public async Task<IEnumerable<ProductDto>> GetProductsByBrand(int brandId)
         {
-            var response = await _client.GetAsync("api/Product?brandId=" + brandId);
+            var client = _clientFactory.CreateClient();
+
+            var disco = await client.GetDiscoveryDocumentAsync("https://customerproductsthamco.azurewebsites.net/");
+            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = "customer_web_app",
+                ClientSecret = "8PuT=9o6TC0i0CB#ctzR",
+                Scope = "customer_web_app"
+            });
+
+            var response = await client.GetAsync("https://customerproductsthamco.azurewebsites.net/Product?brandId=" + brandId);
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
             }
+
             response.EnsureSuccessStatusCode();
-            var products = await response.Content.ReadAsAsync<List<ProductDto>>();
+            var products = await response.Content.ReadAsAsync<IEnumerable<ProductDto>>();
 
             return products;
         }
 
         // GET: api/Product?searchString=X
         [HttpGet("api/Product")]
-        public async Task<List<ProductDto>> GetProductsBySearch(string searchString)
+        public async Task<IEnumerable<ProductDto>> GetProductsBySearch(string searchString)
         {
-            var response = await _client.GetAsync("api/Product?searchString=" + searchString);
+            var client = _clientFactory.CreateClient();
+
+            var disco = await client.GetDiscoveryDocumentAsync("https://customerproductsthamco.azurewebsites.net/");
+            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = "customer_web_app",
+                ClientSecret = "8PuT=9o6TC0i0CB#ctzR",
+                Scope = "customer_web_app"
+            });
+
+            var response = await client.GetAsync("https://customerproductsthamco.azurewebsites.net//Product?searchString=" + searchString);
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
             }
+
             response.EnsureSuccessStatusCode();
             var products = await response.Content.ReadAsAsync<List<ProductDto>>();
 
@@ -90,10 +132,21 @@ namespace Customer.Web.Services.Product
 
         // GET: api/Product?categoryId=X?
         [HttpGet("api/Product")]
-        public async Task<List<ProductDto>> GetProductsByFilter(int? categoryId, int? brandId, 
+        public async Task<IEnumerable<ProductDto>> GetProductsByFilter(int? categoryId, int? brandId, 
                                                                 double? minPrice, double? maxPrice)
         {
-            var response = await _client.GetAsync("api/Product?categoryId=" + categoryId
+            var client = _clientFactory.CreateClient();
+
+            var disco = await client.GetDiscoveryDocumentAsync("https://customerproductsthamco.azurewebsites.net/");
+            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = "customer_web_app",
+                ClientSecret = "8PuT=9o6TC0i0CB#ctzR",
+                Scope = "customer_web_app"
+            });
+
+            var response = await client.GetAsync("https://customerproductsthamco.azurewebsites.net/Product?categoryId=" + categoryId
                                                               + "?brandId=" + brandId
                                                              + "?minPrice=" + minPrice
                                                              + "&maxPrice=" + maxPrice);
@@ -101,6 +154,7 @@ namespace Customer.Web.Services.Product
             {
                 return null;
             }
+
             response.EnsureSuccessStatusCode();
             var products = await response.Content.ReadAsAsync<List<ProductDto>>();
 
@@ -111,11 +165,23 @@ namespace Customer.Web.Services.Product
         [HttpGet("api/Product")]
         public async Task<ProductDto> GetProduct(int productId)
         {
-            var response = await _client.GetAsync("api/Product/" + productId);
+            var client = _clientFactory.CreateClient();
+
+            var disco = await client.GetDiscoveryDocumentAsync("https://customerproductsthamco.azurewebsites.net/");
+            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = "customer_web_app",
+                ClientSecret = "8PuT=9o6TC0i0CB#ctzR",
+                Scope = "customer_web_app"
+            });
+
+            var response = await client.GetAsync("https://customerproductsthamco.azurewebsites.net/Product/" + productId);
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
             }
+
             response.EnsureSuccessStatusCode();
             var product = await response.Content.ReadAsAsync<ProductDto>();
 

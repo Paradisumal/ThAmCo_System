@@ -36,5 +36,7 @@ namespace Customer.Web.Services.Customer
         public bool RequestedDeletion { get; set; }
 
         public bool CanPurchase { get; set; }
+
+        public string Password { get; set; }
     }
 }

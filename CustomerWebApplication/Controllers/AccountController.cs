@@ -12,23 +12,24 @@ using IdentityModel.Client;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc;
+
 
 namespace CustomerWebApplication.Controllers
 {
     public class AccountController : Controller
     {
         private readonly ILogger _logger;
-        /*private readonly IHttpClientFactory _clientFactory;*/
+        private readonly IHttpClientFactory _clientFactory;
         private readonly ICustomerFacade _customerFacade;
 
         public AccountController(ILogger<AccountController> logger,
-                                 /*IHttpClientFactory clientFactory,*/
+                                 IHttpClientFactory clientFactory,
                                  ICustomerFacade customerFacade)
         {
             _logger = logger;
-            /*_clientFactory = clientFactory;*/
+            _clientFactory = clientFactory;
             _customerFacade = customerFacade;
         }
 
@@ -49,10 +50,11 @@ namespace CustomerWebApplication.Controllers
                 {
                     GivenName = model.GivenName,
                     FamilyName = model.FamilyName,
-                    EmailAddress = model.Email
+                    EmailAddress = model.Email,
+                    Password = model.Password
                 };
 
-                await _customerFacade.PostCustomer(customer);
+                await _customerFacade.Register(customer);
 
                 return RedirectToAction("login", "account");
             }
@@ -76,16 +78,25 @@ namespace CustomerWebApplication.Controllers
         {
             ViewData["ReturnUrl"] = returnUrl;
 
+            AccountDto account = new AccountDto
+            {
+                Email = model.Email,
+                Password = model.Password,
+                RememberMe = model.RememberMe
+            };
+
+            await _customerFacade.Login(account);
+
             /*if (ModelState.IsValid)
             {
-                var client = _clientFactory.CreateClient();
+                var client = _clientFactory.CreateClient("RetryAndBreak");
 
-                var disco = await client.GetDiscoveryDocumentAsync("");
+                var disco = await client.GetDiscoveryDocumentAsync("https://customerauththamco.azurewebsites.net");
                 var tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
                 {
                     Address = disco.TokenEndpoint,
-                    ClientId = "",
-                    ClientSecret = "",
+                    ClientId = "customer_web_app",
+                    ClientSecret = "8PuT=9o6TC0i0CB#ctzR",
 
                     UserName = model.Email,
                     Password = model.Password
@@ -116,6 +127,7 @@ namespace CustomerWebApplication.Controllers
                 {
                     new AuthenticationToken { Name = "access_token", Value = tokenResponse.AccessToken }
                 };
+
                 var authProperties = new AuthenticationProperties();
                 authProperties.StoreTokens(tokensToStore);
 
@@ -131,7 +143,7 @@ namespace CustomerWebApplication.Controllers
         [Authorize]
         public async Task<IActionResult> Logout([FromQuery] string returnUrl = null)
         {
-            await HttpContext.SignOutAsync("Cookies");
+            await _customerFacade.Logout();
             return LocalRedirect(returnUrl ?? "/");
         }
 
